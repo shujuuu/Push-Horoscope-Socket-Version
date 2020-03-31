@@ -1,0 +1,27 @@
+{
+  "name": "push-horoscope",
+  "version": "1.0.0",
+  "description": "",
+  "main": "hello.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "googleapis": "^39.2.0",
+    "puppeteer": "^2.1.1",
+    "push.js": "^1.0.12",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shujuuu/Push-Horoscope.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shujuuu/Push-Horoscope/issues"
+  },
+  "homepage": "https://github.com/shujuuu/Push-Horoscope#readme"
+}
