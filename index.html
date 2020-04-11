@@ -100,7 +100,7 @@
             let cleanTime = timeRegExp.exec(element);
             // console.log(cleanTime)
             let p = document.createElement("p");
-            let node = document.createTextNode(`${cleanTitle} at ${cleanTime[0]}`);
+            let node = document.createTextNode(`${cleanTime[0]} - ${cleanTitle}`);
             // pTime.classList.add('inline');
             console.log(node);
             // p.classList.add('');
@@ -109,9 +109,9 @@
         });
         //put dos list into html
         list.matchGood.forEach(element => {
-            let cleanElem = (element.toLowerCase()).replace('+', ' ');
+            // let cleanElem = (element.toLowerCase()).replace('+', '+');
             let p = document.createElement("p");
-            let node = document.createTextNode(cleanElem);
+            let node = document.createTextNode(element);
             p.classList.add('inline');
             p.classList.add('doLists');
             p.appendChild(node);
@@ -120,9 +120,9 @@
         //put donts list into html
         list.matchBad.forEach(element => {
 
-            let cleanElem = (element.toLowerCase()).replace('+', ' ');
+            // let cleanElem = (element.toLowerCase()).replace('+', '-');
             let p = document.createElement("p");
-            let node = document.createTextNode(cleanElem);
+            let node = document.createTextNode(element);
             p.classList.add('inline');
             p.classList.add('dontLists');
             p.appendChild(node);
@@ -160,9 +160,27 @@
     /* .eventTitle {
         font-size: 20px;
     } */
+    .doLists {
+        color: teal;
+    }
+
+    .dontLists {
+        color: tomato;
+    }
 
     .txtCenter {
         text-align: center;
+    }
+
+    /* p {
+        margin-top: 0;
+    } */
+    .section {
+        margin: 50px;
+    }
+
+    .section p {
+        margin: 0 15px;
     }
 </style>
 
@@ -173,27 +191,24 @@
 
     <!-- <p>Loading your fortune...</p> -->
     <div id='fortune' class='txtCenter'>
-        <div>
+        <div class='section'>
             <p>Daily Overview</p>
+            <p id='date' class='inline'></p>
         </div>
-        <div id='date' class='inline'></div>
-        <div>
-            <p>Event:</p>
+        <div class='section'>
+            <p>You have</p>
             <div id='event' class='inline'></div>
         </div>
-        <div id='dos'>
+        <div id='dos' class='section'>
             <p>Dos:</p>
         </div>
 
-        <div id='donts'>
+        <div id='donts' class='section'>
             <p>Donts:</p>
         </div>
-        <div id='performance'>
+        <div id='performance' class='section'>
             <p>Performance: </p>
         </div>
-        <!-- <div id='comment'>
-            <p>Comment:</p>
-        </div> -->
     </div>
 
 </body>

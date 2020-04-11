@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech</title>
+</head>
+
+<body>
+    <button id='readBtn'>read out my fortune</button>
+    <div id='audio'></div>
+</body>
+
+<script>
+    //window.speechSynthesis
+    //speechSynthesis.getVoices() => get all voices
+    //speechSynthesisVoice => name of the voice
+    //speechSynthesisUtterance() => constructor, import the txt we want to convert
+    let synth = window.speechSynthesis;
+
+    GetVoices();
+    if ('speechSynthesis' in window) {
+        var synthesis = window.speechSynthesis;
+
+    } else {
+        console.log('Text-to-speech not supported.');
+    }
+
+    function GetVoices() {
+        let voices = [];
+        voices = synth.getVoices();
+        voices.forEach((voice) => {
+            let v = document.createElement('p');
+            listItem.textContent = voice.name + voice.lang;
+            body.appendChild(v);
+            console.log(voice);
+        })
+    }
+    // console.log(getAllVoices);
+    const readAnalysis = () => {
+        let saythis =
+            "You have a class event.";
+        let speakTxt = new SpeechSynthesisUtterance(saythis);
+
+        speakTxt.onend = e => {
+            console.log('done speaking');
+            stopTTS();
+        }
+        speakTxt.onerror = e => {
+            console.error(e);
+        }
+        //select a default voice
+        // speakTxt.voice = "Alex";
+        speakTxt.lang = "zh-TW"; //zh-TW,ja-JP,en-GB, en-US
+        //select pitch and rate
+        speakTxt.rate = 1;
+        speakTxt.pitch = 1;
+
+        synth.speak(speakTxt);
+    }
+
+
+    let readBtn = document.getElementById('readBtn');
+    readBtn.addEventListener('click', function () {
+        readAnalysis();
+        recordTTS();
+    });
+
+    //record this speech
+    let audio = document.getElementById('audio');
+    let state = false;
+    let newRecording;
+    let constraints = {
+        audio: true
+    }
+    let recordedChunks = [];
+    // navigator.mediaDevices.getUserMedia(constraints)
+    //     .then(setMediaRecorder)
+    //     .catch(console.log);
+    function recordTTS() {
+        newRecording.start();
+        console.log('starting to record');
+        console.log(newRecording.state);
+        // setTimeout(function () {
+        //     console.log('3 sec pass')
+        //     stopTTS();
+        // }, 3000);
+    }
+
+    function stopTTS() {
+        newRecording.stop();
+        console.log('recorder stopped');
+        console.log(newRecording.state);
+    }
+
+    function setStream(mediaStream) {
+        newRecording = new MediaRecorder(mediaStream);
+        newRecording.onstart = function (e) {
+
+        }
+        newRecording.onstop = function (e) {
+            // console.log("data available after MediaRecorder.stop() called.");
+            var blob = new Blob(recordedChunks, {
+                'type': 'audio/ogg; codecs=opus'
+            });
+            recordedChunks = [];
+            var audioURL = URL.createObjectURL(blob);
+            let createAudio = document.createElement('audio');
+            createAudio.src = audioURL;
+            createAudio.setAttribute('controls', '');
+            console.log(audioURL);
+            audio.appendChild(createAudio);
+            //save the wav to file system
+        }
+        newRecording.ondataavailable = function (e) {
+            recordedChunks.push(e.data);
+        }
+    }
+
+
+
+    // Prompt the user for permission, get the stream
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(setStream)
+        .catch(function (err) {
+            console.error(err);
+        });
+</script>
+
+</html>
