@@ -19,6 +19,35 @@
 
     <title>Push Horoscope</title>
 </head>
+
+<body>
+    <!-- <button id='timeStampBtn'>Click and store to firebase</button> -->
+    <!-- <button id='loginCalendar'>Login Another Calendar</button> -->
+    <img id='original' src="" alt="">
+    <div id='audio'></div>
+    <!-- <p>Loading your fortune...</p> -->
+    <div id='fortune' class='txtCenter'>
+        <div class='section'>
+            <p>Today is</p>
+            <p id='date' class='inline'></p>
+        </div>
+        <div class='section'>
+            <p>You have</p>
+            <div id='event' class='inline'></div>
+        </div>
+        <div id='performance' class='section'>
+            <p>Expected performance rate will be</p>
+        </div>
+        <div id='dos' class='section'>
+            <p>It is a good day to</p>
+        </div>
+
+        <div id='donts' class='section'>
+            <p>Refrain activities such as</p>
+        </div>
+    </div>
+
+</body>
 <script>
     // let result = {
     //     cleanToday: '2020-03-30',
@@ -60,27 +89,21 @@
     //     console.log(timeRegExp.exec(element)[0]);
     // })
 
-
-
-
-
     var socket = io.connect('');
     socket.on('connect', function () {
         console.log("Connected");
     });
 
+    let dos = document.getElementById('dos');
+    let donts = document.getElementById('donts');
+    let performance = document.getElementById('performance');
+    // let comment = document.getElementById('comment');
+    let event = document.getElementById('event')
+    let timeRegExp = /\d{2}:\d{2}/;
+    let titleRegExp = /\s\w+/;
+    let date = document.getElementById('date');
     socket.on('activities', function (list) {
         // console.log(list);
-
-        let dos = document.getElementById('dos');
-        let donts = document.getElementById('donts');
-        let performance = document.getElementById('performance');
-        // let comment = document.getElementById('comment');
-        let event = document.getElementById('event')
-        let timeRegExp = /\d{2}:\d{2}/;
-        let titleRegExp = /\s\w+/;
-        let date = document.getElementById('date');
-
         //put date into html        
         date.innerHTML = list.cleanToday;
 
@@ -89,23 +112,25 @@
             //get clean title
             let startTitleIndex = 28;
             let cleanTitle = element.slice(startTitleIndex);
-            // console.log(cleanTitle)
-            // let pTitle = document.createElement("p");
-            // let nodeTitle = document.createTextNode(cleanTitle);
-            // pTitle.classList.add('eventTitle');
-            // pTitle.appendChild(nodeTitle);
-            // event.appendChild(pTitle);
+            let spanTitle = document.createElement("span");
+            let nodeTitle = document.createTextNode(cleanTitle);
+            spanTitle.classList.add('eventTitle');
+            spanTitle.appendChild(nodeTitle);
 
             //get clean time
             let cleanTime = timeRegExp.exec(element);
-            // console.log(cleanTime)
-            let p = document.createElement("p");
-            let node = document.createTextNode(`${cleanTime[0]} - ${cleanTitle}`);
-            // pTime.classList.add('inline');
-            console.log(node);
-            // p.classList.add('');
-            p.appendChild(node);
-            event.appendChild(p);
+            let spanTime = document.createElement("span");
+            let nodeTime = document.createTextNode(cleanTime);
+            spanTime.classList.add('eventTime');
+            spanTime.appendChild(nodeTime);
+
+            let pDetails = document.createElement("p");
+            pDetails.appendChild(spanTitle);
+            pDetails.appendChild(spanTime);
+            pDetails.classList.add('eventDetail');
+            event.appendChild(pDetails);
+            // console.log(event);
+            // return eventTitle, eventTime
         });
         //put dos list into html
         list.matchGood.forEach(element => {
@@ -130,11 +155,125 @@
         });
         //put score into html
         let p = document.createElement("p");
-        let node = document.createTextNode(list.score);
+        let nodeScore = document.createTextNode(list.score);
         p.classList.add('inline');
-        p.appendChild(node);
+        p.classList.add('score');
+        p.appendChild(nodeScore);
         performance.appendChild(p);
+
+        readAnalysis();
+        recordTTS();
     });
+
+    //read out loud
+    let synth = window.speechSynthesis;
+
+    if ('speechSynthesis' in window) {
+        var synthesis = window.speechSynthesis;
+    } else {
+        console.log('Text-to-speech not supported.');
+    }
+
+    const readAnalysis = () => {
+        let eventTitleVal = document.querySelector('.eventTitle').innerText;
+        let eventTimeVal = document.querySelector('.eventTime').innerText;
+        let scoreVal = document.querySelector('.score').innerText;
+        // console.log(scoreVal, eventDetailVal);
+        let saythis = '';
+        //bad
+        if (scoreVal < 0) {
+            saythis =
+                `Oh no! The world seems to be against you today. Watch out for your scheduled event, ${eventTitleVal}.`;
+            console.log('baddd');
+        } else if (scoreVal = 0) {
+            saythis =
+                `Today is just another normal day. Nothing too special or bad. Have fun on your scheduled event, ${eventTitleVal}.`
+            console.log('neutral')
+        } else {
+            saythis = `Looking great today! Have a blast on your scheduled event, ${eventTitleVal}`
+            console.log('good');
+        }
+
+        let speakTxt = new SpeechSynthesisUtterance(saythis);
+
+        speakTxt.onend = e => {
+            console.log('done speaking');
+            stopTTS();
+        }
+        speakTxt.onerror = e => {
+            console.error(e);
+        }
+        //select a default voice
+        // speakTxt.voice = "Alex";
+        speakTxt.lang = "en-US"; //zh-TW,ja-JP,en-GB, en-US
+        //select pitch and rate
+        speakTxt.rate = 1;
+        speakTxt.pitch = 1;
+
+        synth.speak(speakTxt);
+    }
+
+    //record this speech
+    let audio = document.getElementById('audio');
+    let state = false;
+    let newRecording;
+    let constraints = {
+        audio: true
+    }
+    let recordedChunks = [];
+
+    function recordTTS() {
+        newRecording.start();
+        // console.log('starting to record');
+        // console.log(newRecording.state);
+    }
+
+    function stopTTS() {
+        newRecording.stop();
+        // console.log('recorder stopped');
+        // console.log(newRecording.state);
+    }
+
+    function loopRecording() {
+        let myAnalysis = document.getElementById('myAnalysis');
+        console.log(myAnalysis)
+        myAnalysis.play();
+    }
+
+    function setStream(mediaStream) {
+        newRecording = new MediaRecorder(mediaStream);
+        newRecording.onstart = function (e) {
+
+        }
+        newRecording.onstop = function (e) {
+            // console.log("data available after MediaRecorder.stop() called.");
+            var blob = new Blob(recordedChunks, {
+                'type': 'audio/wav; codecs=opus'
+            });
+            recordedChunks = [];
+            var audioURL = URL.createObjectURL(blob);
+            let createAudio = document.createElement('audio');
+            createAudio.src = audioURL;
+            createAudio.setAttribute('id', 'myAnalysis');
+            createAudio.setAttribute('controls', '');
+            console.log(audioURL);
+            audio.appendChild(createAudio);
+            //save the wav to file system -> backend
+            socket.emit('recordFile', audioURL);
+
+        }
+        newRecording.ondataavailable = function (e) {
+            recordedChunks.push(e.data);
+        }
+    }
+
+
+    // Prompt the user for permission, get the stream
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(setStream)
+        .catch(function (err) {
+            console.error(err);
+        });
 </script>
 <style>
     * {
@@ -153,13 +292,6 @@
         margin: 0 25px;
     }
 
-    /* .date {
-        font-size: 20px;
-    } */
-
-    /* .eventTitle {
-        font-size: 20px;
-    } */
     .doLists {
         color: teal;
     }
@@ -172,9 +304,6 @@
         text-align: center;
     }
 
-    /* p {
-        margin-top: 0;
-    } */
     .section {
         margin: 50px;
     }
@@ -182,36 +311,13 @@
     .section p {
         margin: 0 15px;
     }
+
+    .eventTitle::after {
+        content: ' at ';
+    }
 </style>
 
-<body>
-    <!-- <button id='timeStampBtn'>Click and store to firebase</button> -->
-    <!-- <button id='loginCalendar'>Login Another Calendar</button> -->
-    <img id='original' src="" alt="">
 
-    <!-- <p>Loading your fortune...</p> -->
-    <div id='fortune' class='txtCenter'>
-        <div class='section'>
-            <p>Daily Overview</p>
-            <p id='date' class='inline'></p>
-        </div>
-        <div class='section'>
-            <p>You have</p>
-            <div id='event' class='inline'></div>
-        </div>
-        <div id='dos' class='section'>
-            <p>Dos:</p>
-        </div>
-
-        <div id='donts' class='section'>
-            <p>Donts:</p>
-        </div>
-        <div id='performance' class='section'>
-            <p>Performance: </p>
-        </div>
-    </div>
-
-</body>
 <script>
 </script>
 

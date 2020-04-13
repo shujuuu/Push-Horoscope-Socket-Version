@@ -191,11 +191,10 @@ io.sockets.on('connection',
                 if (err) return console.log('The API returned an error: ' + err);
                 const events = res.data.items;
                 if (events.length) {
-                    // console.log('Upcoming events for trial calendar');
+                    console.log('Upcoming events for primary calendar');
                     events.map((event, i) => {
                         const start = event.start.dateTime || event.start.date;
                         //if event will happen today
-                        console.log("events for class today: ")
                         if (start.match(regExp)[0] == todayIso.match(regExp)[0]) {
                             console.log(`${start} - ${event.summary}`);
                             classEvents.push(`${start} - ${event.summary}`);
@@ -373,15 +372,19 @@ io.sockets.on('connection',
                 io.sockets.emit('activities', finalResult);
                 // console.log(finalResult);
                 // return finalResult
+
+                //send to arduino
+                if (result.score < "0") {
+                    console.log('bad result');
+                    // serialPort.write(52);
+                }
             })
 
-        //send to arduino
-        // if (result.score < "0") {
-        //     console.log('bad result');
-        //     serialPort.write(52);
-        // }
-        // });
+        socket.on('recordFile', file => {
+            console.log("receive file from front end " + file);
+            fs.writeFileSync(__dirname + '/recordings' + '.wav', file);
 
+        })
 
         socket.on('disconnect', function () {
             console.log("Client has disconnected " + socket.id);
