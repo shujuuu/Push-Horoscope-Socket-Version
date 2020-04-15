@@ -42,7 +42,9 @@
 
 //3rd: via live web
 var http = require('http');
-// var fs = require('fs');
+var fs = require('fs');
+var FileReader = require('filereader');
+var fileReader = new FileReader();
 var httpServer = http.createServer(requestHandler);
 var url = require('url');
 httpServer.listen(8000);
@@ -68,8 +70,23 @@ function requestHandler(req, res) {
 }
 console.log('fortune analysis running on 8000');
 var io = require('socket.io').listen(httpServer);
+
+// serial port
+// var connected = false;
+// var SerialPort = require('serialport');
+// var serialPort = new SerialPort("/dev/cu.usbmodem14101", {
+//     baudRate: 9600
+// });
+// var Readline = SerialPort.parsers.Readline;
+// var parser = new Readline();
+
+// serialPort.on("open", function () {
+//     console.log("serial port open & connected");
+// });
+
+
 //Google Calendar API
-const fs = require('fs');
+// const fs = require('fs');
 const readline = require('readline');
 const {
     google
@@ -374,16 +391,22 @@ io.sockets.on('connection',
                 // return finalResult
 
                 //send to arduino
-                if (result.score < "0") {
-                    console.log('bad result');
-                    // serialPort.write(52);
-                }
+                let signal = 2;
+                // if (score < 0) {
+                //     console.log('send bad result to arduino, ' + score + ',trigger vibration');
+                //     serialPort.write(signal.toString());
+                // }
             })
 
         socket.on('recordFile', file => {
             console.log("receive file from front end " + file);
-            fs.writeFileSync(__dirname + '/recordings' + '.wav', file);
-
+            fs.writeFileSync(__dirname + '/recordings1' + '.wav', file);
+            // fileReader.onload = function () {
+            //     console.log(this.result);
+            // let newRecording = new Buffer.from(new Uint8Array(file));
+            // fs.writeFileSync(__dirname + '/recordings3.wav', newRecording);
+            // };
+            // fileReader.readAsArrayBuffer(file);
         })
 
         socket.on('disconnect', function () {

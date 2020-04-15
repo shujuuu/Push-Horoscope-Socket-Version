@@ -5,9 +5,11 @@
   "main": "hello.js",
   "dependencies": {
     "express": "^4.17.1",
+    "filereader": "^0.10.3",
     "googleapis": "^39.2.0",
     "puppeteer": "^2.1.1",
     "push.js": "^1.0.12",
+    "serialport": "^8.0.7",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {},

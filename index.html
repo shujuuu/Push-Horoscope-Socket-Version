@@ -32,18 +32,18 @@
             <p id='date' class='inline'></p>
         </div>
         <div class='section'>
-            <p>You have</p>
+            <p>You have scheduled</p>
             <div id='event' class='inline'></div>
         </div>
         <div id='performance' class='section'>
-            <p>Expected performance rate will be</p>
+            <p>Expected level of performance is</p>
         </div>
         <div id='dos' class='section'>
-            <p>It is a good day to</p>
+            <p>Try</p>
         </div>
 
         <div id='donts' class='section'>
-            <p>Refrain activities such as</p>
+            <p>Refrain from</p>
         </div>
     </div>
 
@@ -102,6 +102,9 @@
     let timeRegExp = /\d{2}:\d{2}/;
     let titleRegExp = /\s\w+/;
     let date = document.getElementById('date');
+    let stringTitle = [];
+    let stringTime = [];
+
     socket.on('activities', function (list) {
         // console.log(list);
         //put date into html        
@@ -116,6 +119,7 @@
             let nodeTitle = document.createTextNode(cleanTitle);
             spanTitle.classList.add('eventTitle');
             spanTitle.appendChild(nodeTitle);
+            stringTitle.push(cleanTitle);
 
             //get clean time
             let cleanTime = timeRegExp.exec(element);
@@ -123,12 +127,14 @@
             let nodeTime = document.createTextNode(cleanTime);
             spanTime.classList.add('eventTime');
             spanTime.appendChild(nodeTime);
+            stringTime.push(cleanTime);
 
             let pDetails = document.createElement("p");
             pDetails.appendChild(spanTitle);
             pDetails.appendChild(spanTime);
             pDetails.classList.add('eventDetail');
             event.appendChild(pDetails);
+
             // console.log(event);
             // return eventTitle, eventTime
         });
@@ -144,7 +150,6 @@
         });
         //put donts list into html
         list.matchBad.forEach(element => {
-
             // let cleanElem = (element.toLowerCase()).replace('+', '-');
             let p = document.createElement("p");
             let node = document.createTextNode(element);
@@ -175,22 +180,20 @@
     }
 
     const readAnalysis = () => {
-        let eventTitleVal = document.querySelector('.eventTitle').innerText;
-        let eventTimeVal = document.querySelector('.eventTime').innerText;
         let scoreVal = document.querySelector('.score').innerText;
-        // console.log(scoreVal, eventDetailVal);
         let saythis = '';
         //bad
         if (scoreVal < 0) {
             saythis =
-                `Oh no! The world seems to be against you today. Watch out for your scheduled event, ${eventTitleVal}.`;
+                `Oh no! The world seems to be against you today. Watch out for your ${stringTitle.length} scheduled event. ${stringTitle}`;
             console.log('baddd');
         } else if (scoreVal = 0) {
             saythis =
-                `Today is just another normal day. Nothing too special or bad. Have fun on your scheduled event, ${eventTitleVal}.`
+                `Today is just another ordinary day, nothing too special or unusual. You should have pretty standard performance on your ${stringTitle.length} scheduled event. ${stringTitle}`
             console.log('neutral')
         } else {
-            saythis = `Looking great today! Have a blast on your scheduled event, ${eventTitleVal}`
+            saythis =
+                `What a lovely day! Expect tremendous outcome on your ${stringTitle.length} scheduled event. ${stringTitle}`
             console.log('good');
         }
 
