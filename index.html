@@ -39,7 +39,7 @@
             <p>Expected level of performance is</p>
         </div>
         <div id='dos' class='section'>
-            <p>Try</p>
+            <p>Suitable for</p>
         </div>
 
         <div id='donts' class='section'>
@@ -262,7 +262,7 @@
             console.log(audioURL);
             audio.appendChild(createAudio);
             //save the wav to file system -> backend
-            socket.emit('recordFile', audioURL);
+            socket.emit('recordFile', blob);
 
         }
         newRecording.ondataavailable = function (e) {
