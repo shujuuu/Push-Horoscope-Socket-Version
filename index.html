@@ -25,7 +25,7 @@
     <!-- <button id='loginCalendar'>Login Another Calendar</button> -->
     <img id='original' src="" alt="">
     <div id='audio'></div>
-    <!-- <p>Loading your fortune...</p> -->
+    <p id='prompt'>Loading your fortune...</p>
     <div id='fortune' class='txtCenter'>
         <div class='section'>
             <p>Today is</p>
@@ -185,7 +185,7 @@
         //bad
         if (scoreVal < 0) {
             saythis =
-                `Oh no! The world seems to be against you today. Watch out for your ${stringTitle.length} scheduled event. ${stringTitle}`;
+                `Expected performance level, very low. Watch out for your ${stringTitle.length} scheduled event. ${stringTitle}`;
             console.log('baddd');
         } else if (scoreVal = 0) {
             saythis =
@@ -255,12 +255,15 @@
             });
             recordedChunks = [];
             var audioURL = URL.createObjectURL(blob);
-            let createAudio = document.createElement('audio');
-            createAudio.src = audioURL;
-            createAudio.setAttribute('id', 'myAnalysis');
-            createAudio.setAttribute('controls', '');
-            console.log(audioURL);
-            audio.appendChild(createAudio);
+
+            //show recordings on screen -> optional
+            // let createAudio = document.createElement('audio');
+            // createAudio.src = audioURL;
+            // createAudio.setAttribute('id', 'myAnalysis');
+            // createAudio.setAttribute('controls', '');
+            // console.log(audioURL);
+            // audio.appendChild(createAudio);
+
             //save the wav to file system -> backend
             socket.emit('recordFile', blob);
 

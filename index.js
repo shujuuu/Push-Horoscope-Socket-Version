@@ -72,17 +72,17 @@ console.log('fortune analysis running on 8000');
 var io = require('socket.io').listen(httpServer);
 
 // serial port
-// var connected = false;
-// var SerialPort = require('serialport');
-// var serialPort = new SerialPort("/dev/cu.usbmodem14101", {
-//     baudRate: 9600
-// });
-// var Readline = SerialPort.parsers.Readline;
-// var parser = new Readline();
+var connected = false;
+var SerialPort = require('serialport');
+var serialPort = new SerialPort("/dev/cu.usbmodem14101", {
+    baudRate: 9600
+});
+var Readline = SerialPort.parsers.Readline;
+var parser = new Readline();
 
-// serialPort.on("open", function () {
-//     console.log("serial port open & connected");
-// });
+serialPort.on("open", function () {
+    console.log("serial port open & connected");
+});
 
 
 //Google Calendar API
@@ -391,20 +391,23 @@ io.sockets.on('connection',
                 // return finalResult
 
                 //send to arduino
-                let signal = 2;
-                // if (score < 0) {
-                //     console.log('send bad result to arduino, ' + score + ',trigger vibration');
-                //     serialPort.write(signal.toString());
-                // }
+                let signal = 1;
+                if (score < 0) {
+                    console.log('send bad result to arduino, ' + score + ',trigger vibration');
+                    serialPort.write(signal.toString());
+                }
             })
 
         socket.on('recordFile', file => {
-            console.log("receive file from front end " + file);
-            fs.writeFileSync(__dirname + '/recordings1' + '.wav', file);
+            // console.log("receive file from front end " + file);
+            //save success -> plays in vlc onlyx
+            // fs.writeFileSync(__dirname + '/recordings3' + '.wav', file);
+            // fs.writeFileSync(__dirname + '/recordings4' + '.wav', Buffer.from(new Uint8Array(file))); //convert buffer
+            //save with stackflow solution
+
             // fileReader.onload = function () {
             //     console.log(this.result);
-            // let newRecording = new Buffer.from(new Uint8Array(file));
-            // fs.writeFileSync(__dirname + '/recordings3.wav', newRecording);
+            //     fs.writeFileSync(__dirname + 'recordings1.wav', Buffer(new Uint8Array(this.result)));
             // };
             // fileReader.readAsArrayBuffer(file);
         })
